@@ -6,13 +6,13 @@
   <meta name="theme-color" content="#06101d">
   <title>Projeto Educacional 2.0 — Fase 2</title>
 
-  <link rel="stylesheet" href="style.css?v=fase2-1.0">
+  <link rel="stylesheet" href="style.css?v=fase2-1.1-b15">
 
   <!-- Leitura local de planilhas XLS/XLSX e documentos DOCX -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/mammoth@1.13.0/mammoth.browser.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js" defer></script>
-  <script src="script.js?v=fase2-1.0" defer></script>
+  <script src="script.js?v=fase2-1.1-b15" defer></script>
 </head>
 
 <body>
@@ -782,6 +782,14 @@
           </div>
 
           <section id="phase2Scene" class="phase2-scene">
+            <!-- Camada atmosférica exclusiva do cenário B15natureza.jpg.
+                 Os efeitos são gerados por CSS/JavaScript e não alteram a imagem original. -->
+            <div id="phase2Atmosphere" class="phase2-atmosphere hidden" aria-hidden="true">
+              <div id="phase2CloudsLayer" class="phase2-clouds-layer"></div>
+              <div id="phase2BirdsLayer" class="phase2-birds-layer"></div>
+              <div id="phase2WaterLayer" class="phase2-water-layer"></div>
+            </div>
+
             <div class="phase2-scene-shade"></div>
             <div id="phase2MissionLayer" class="phase2-mission-layer"></div>
             <div id="phase2SceneFallback" class="phase2-scene-fallback hidden">

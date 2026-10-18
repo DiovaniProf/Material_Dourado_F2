@@ -7488,6 +7488,64 @@ function phase2ImageFor(levelKey,blockIndex){
   return PHASE2_LEVELS[levelKey]?.images?.[blockIndex] || "";
 }
 
+function phase2ClearSceneAtmosphere(){
+  const scene = $("#phase2Scene");
+  const atmosphere = $("#phase2Atmosphere");
+  const clouds = $("#phase2CloudsLayer");
+  const birds = $("#phase2BirdsLayer");
+  const water = $("#phase2WaterLayer");
+
+  scene?.classList.remove("scene-b15natureza");
+  atmosphere?.classList.add("hidden");
+
+  if(clouds) clouds.innerHTML = "";
+  if(birds) birds.innerHTML = "";
+  if(water) water.innerHTML = "";
+}
+
+function phase2IsAnimatedNatureScene(filename){
+  return /(^|\/)B15natureza\.(jpg|jpeg|png|webp)$/i.test(String(filename || "").trim());
+}
+
+function phase2RenderSceneAtmosphere(filename){
+  const scene = $("#phase2Scene");
+  const atmosphere = $("#phase2Atmosphere");
+  const clouds = $("#phase2CloudsLayer");
+  const birds = $("#phase2BirdsLayer");
+  const water = $("#phase2WaterLayer");
+
+  if(!scene || !atmosphere || !clouds || !birds || !water) return;
+
+  // Regra inegociável da FASE 2: somente B15natureza recebe atmosfera em movimento.
+  if(!phase2IsAnimatedNatureScene(filename)){
+    phase2ClearSceneAtmosphere();
+    return;
+  }
+
+  scene.classList.add("scene-b15natureza");
+  atmosphere.classList.remove("hidden");
+
+  clouds.innerHTML = `
+    <span class="phase2-cloud phase2-cloud-a"></span>
+    <span class="phase2-cloud phase2-cloud-b"></span>
+    <span class="phase2-cloud phase2-cloud-c"></span>
+    <span class="phase2-cloud phase2-cloud-d"></span>
+  `;
+
+  birds.innerHTML = `
+    <span class="phase2-bird phase2-bird-a"></span>
+    <span class="phase2-bird phase2-bird-b"></span>
+    <span class="phase2-bird phase2-bird-c"></span>
+    <span class="phase2-bird phase2-bird-d"></span>
+  `;
+
+  water.innerHTML = `
+    <span class="phase2-water-flow phase2-water-flow-a"></span>
+    <span class="phase2-water-flow phase2-water-flow-b"></span>
+    <span class="phase2-water-flow phase2-water-flow-c"></span>
+  `;
+}
+
 function phase2ApplySceneImage(levelKey,blockIndex){
   const scene = $("#phase2Scene");
   const fallback = $("#phase2SceneFallback");
@@ -7495,18 +7553,28 @@ function phase2ApplySceneImage(levelKey,blockIndex){
 
   const filename = phase2ImageFor(levelKey,blockIndex);
   scene.classList.add("is-transitioning");
+  phase2ClearSceneAtmosphere();
 
   const probe = new Image();
   probe.onload = () => {
     scene.style.backgroundImage = `url("${filename}")`;
     fallback?.classList.add("hidden");
-    requestAnimationFrame(() => setTimeout(() => scene.classList.remove("is-transitioning"),120));
+
+    // Água, nuvens e pássaros são adicionados apenas a B15natureza.
+    phase2RenderSceneAtmosphere(filename);
+
+    requestAnimationFrame(() => {
+      setTimeout(() => scene.classList.remove("is-transitioning"),120);
+    });
   };
+
   probe.onerror = () => {
     scene.style.backgroundImage = "linear-gradient(145deg,#0c1b2d,#132943 55%,#07111e)";
     fallback?.classList.remove("hidden");
+    phase2ClearSceneAtmosphere();
     scene.classList.remove("is-transitioning");
   };
+
   probe.src = filename;
 }
 

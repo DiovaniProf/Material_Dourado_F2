@@ -7068,3 +7068,258 @@ small{color:var(--muted)}
   .phase2-map-actions{width:100%;display:grid;grid-template-columns:1fr}
   .phase2-participation-summary{grid-template-columns:1fr 1fr}
 }
+
+/* ============================================================
+   FASE 2 — ATMOSFERA ANIMADA — B15natureza.jpg
+   Efeito deliberadamente sutil: água, nuvens e pássaros.
+   Não é aplicado a nenhum outro cenário.
+   ============================================================ */
+
+.phase2-scene{
+  isolation:isolate;
+}
+
+.phase2-atmosphere{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  overflow:hidden;
+  pointer-events:none;
+}
+
+.phase2-atmosphere.hidden{
+  display:none !important;
+}
+
+.phase2-clouds-layer,
+.phase2-birds-layer,
+.phase2-water-layer{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
+}
+
+.phase2-scene-shade{
+  z-index:2;
+}
+
+.phase2-mission-layer{
+  z-index:3;
+}
+
+.phase2-scene-fallback{
+  z-index:4;
+}
+
+/* NUVENS — formas suaves e translúcidas, sem cobrir a leitura do cenário. */
+.phase2-cloud{
+  position:absolute;
+  height:clamp(34px,4.2vw,68px);
+  border-radius:999px;
+  background:
+    radial-gradient(circle at 28% 44%,rgba(255,255,255,.38) 0 22%,rgba(255,255,255,.16) 43%,transparent 70%),
+    radial-gradient(circle at 58% 40%,rgba(255,244,224,.29) 0 24%,rgba(255,244,224,.12) 45%,transparent 72%),
+    radial-gradient(circle at 78% 50%,rgba(255,255,255,.23) 0 18%,rgba(255,255,255,.08) 44%,transparent 72%);
+  filter:blur(7px);
+  opacity:.28;
+  mix-blend-mode:screen;
+  will-change:transform;
+}
+
+.phase2-cloud-a{
+  left:-8%;
+  top:8%;
+  width:27%;
+  animation:phase2CloudDriftRight 52s linear infinite;
+}
+
+.phase2-cloud-b{
+  left:18%;
+  top:15%;
+  width:20%;
+  opacity:.23;
+  animation:phase2CloudDriftLeft 44s linear infinite -14s;
+}
+
+.phase2-cloud-c{
+  left:51%;
+  top:11%;
+  width:25%;
+  opacity:.20;
+  animation:phase2CloudDriftRight 61s linear infinite -26s;
+}
+
+.phase2-cloud-d{
+  left:75%;
+  top:19%;
+  width:19%;
+  opacity:.18;
+  animation:phase2CloudDriftLeft 48s linear infinite -8s;
+}
+
+/* ÁGUA — reflexos rasos posicionados sobre o curso d'água ao fundo. */
+.phase2-water-flow{
+  --water-rotate:0deg;
+  position:absolute;
+  border-radius:999px;
+  background:
+    linear-gradient(90deg,
+      transparent 0%,
+      rgba(255,255,255,.05) 11%,
+      rgba(164,223,255,.18) 28%,
+      rgba(255,246,214,.16) 45%,
+      rgba(146,216,255,.18) 62%,
+      rgba(255,255,255,.04) 82%,
+      transparent 100%);
+  background-size:230% 100%;
+  opacity:.26;
+  mix-blend-mode:screen;
+  filter:blur(1.6px);
+  transform:rotate(var(--water-rotate));
+  will-change:background-position,transform,opacity;
+  animation:phase2WaterShimmer 9.5s ease-in-out infinite;
+}
+
+.phase2-water-flow-a{
+  left:57%;
+  top:46.5%;
+  width:24%;
+  height:4.8%;
+  --water-rotate:5deg;
+}
+
+.phase2-water-flow-b{
+  left:55%;
+  top:54.5%;
+  width:29%;
+  height:5.8%;
+  --water-rotate:3deg;
+  opacity:.21;
+  animation-duration:11.5s;
+  animation-delay:-4s;
+}
+
+.phase2-water-flow-c{
+  left:52%;
+  top:63%;
+  width:25%;
+  height:5.2%;
+  --water-rotate:-4deg;
+  opacity:.17;
+  animation-duration:13s;
+  animation-delay:-7s;
+}
+
+/* PÁSSAROS — silhuetas pequenas, ao fundo, sem interferir nos botões das missões. */
+.phase2-bird{
+  --bird-scale:1;
+  position:absolute;
+  width:30px;
+  height:14px;
+  opacity:.48;
+  filter:drop-shadow(0 1px 1px rgba(255,255,255,.08));
+  animation:phase2BirdGlide 18s ease-in-out infinite;
+  will-change:transform;
+}
+
+.phase2-bird::before,
+.phase2-bird::after{
+  content:"";
+  position:absolute;
+  top:6px;
+  width:15px;
+  height:7px;
+  border-top:2px solid rgba(27,38,53,.64);
+  border-radius:80% 80% 0 0;
+}
+
+.phase2-bird::before{
+  left:0;
+  transform:rotate(-17deg);
+  transform-origin:right center;
+}
+
+.phase2-bird::after{
+  right:0;
+  transform:scaleX(-1) rotate(-17deg);
+  transform-origin:left center;
+}
+
+.phase2-bird-a{
+  left:61%;
+  top:18%;
+  --bird-scale:.72;
+  animation-duration:19s;
+}
+
+.phase2-bird-b{
+  left:65%;
+  top:21%;
+  --bird-scale:.55;
+  animation-duration:23s;
+  animation-delay:-8s;
+}
+
+.phase2-bird-c{
+  left:70%;
+  top:16%;
+  --bird-scale:.82;
+  animation-duration:21s;
+  animation-delay:-4s;
+}
+
+.phase2-bird-d{
+  left:74%;
+  top:20%;
+  --bird-scale:.62;
+  animation-duration:25s;
+  animation-delay:-13s;
+}
+
+@keyframes phase2CloudDriftRight{
+  0%{transform:translate3d(0,0,0)}
+  50%{transform:translate3d(42px,-3px,0)}
+  100%{transform:translate3d(84px,0,0)}
+}
+
+@keyframes phase2CloudDriftLeft{
+  0%{transform:translate3d(0,0,0)}
+  50%{transform:translate3d(-31px,3px,0)}
+  100%{transform:translate3d(-62px,0,0)}
+}
+
+@keyframes phase2WaterShimmer{
+  0%{
+    background-position:0% 50%;
+    transform:rotate(var(--water-rotate)) translate3d(-1.5%,0,0) scaleY(.96);
+    opacity:.18;
+  }
+  50%{
+    background-position:100% 50%;
+    transform:rotate(var(--water-rotate)) translate3d(1.5%,1px,0) scaleY(1.04);
+    opacity:.30;
+  }
+  100%{
+    background-position:200% 50%;
+    transform:rotate(var(--water-rotate)) translate3d(-1.5%,0,0) scaleY(.96);
+    opacity:.18;
+  }
+}
+
+@keyframes phase2BirdGlide{
+  0%{transform:translate3d(0,0,0) scale(var(--bird-scale))}
+  25%{transform:translate3d(12px,-4px,0) scale(var(--bird-scale))}
+  50%{transform:translate3d(27px,0,0) scale(var(--bird-scale))}
+  75%{transform:translate3d(14px,4px,0) scale(var(--bird-scale))}
+  100%{transform:translate3d(0,0,0) scale(var(--bird-scale))}
+}
+
+/* Respeita a preferência do usuário por menos movimento. */
+@media (prefers-reduced-motion:reduce){
+  .phase2-cloud,
+  .phase2-water-flow,
+  .phase2-bird{
+    animation:none !important;
+  }
+}
