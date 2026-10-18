@@ -1,0 +1,11 @@
+numero_questao,titulo,enunciado,pergunta,resposta,nivel,tipo,unidade,operando_a,operando_b
+01,D01 - Lápis na escola,Uma professora tem 36 lápis para distribuir igualmente entre 4 grupos.,Quantos lápis cada grupo receberá?,9,N2,Básico,lápis,36,4
+02,D02 - Ração para gatos,Um abrigo separou 56 sachês de ração para distribuir igualmente entre 7 gatos.,Quantos sachês serão destinados a cada gato?,8,N2,Básico,sachês,56,7
+03,D03 - Ovos nas embalagens,Uma granja precisa colocar 75 ovos em 5 embalagens iguais.,Quantos ovos ficarão em cada embalagem?,15,N2,Básico,ovos,75,5
+04,D04 - Figurinhas entre amigos,Pedro tem 96 figurinhas para dividir igualmente entre 6 amigos.,Quantas figurinhas cada amigo receberá?,16,N2,Básico,figurinhas,96,6
+05,D05 - Livros na biblioteca,Uma biblioteca recebeu 144 livros e vai distribuí-los igualmente em 6 prateleiras.,Quantos livros ficarão em cada prateleira?,24,N2,Intermediário,livros,144,6
+06,D06 - Mudas na horta,Uma escola possui 256 mudas de alface para plantar igualmente em 8 canteiros.,Quantas mudas ficarão em cada canteiro?,32,N2,Intermediário,mudas,256,8
+07,D07 - Produção de ovos,"Uma granja produziu 525 ovos em 7 dias, mantendo a mesma produção diária.",Quantos ovos foram produzidos por dia?,75,N2,Intermediário,ovos por dia,525,7
+08,D08 - Cadernos para as turmas,Uma escola recebeu 936 cadernos para distribuir igualmente entre 12 turmas.,Quantos cadernos cada turma receberá?,78,N2,Intermediário,cadernos,936,12
+09,D09 - Compra de celular,"Um celular custa R$ 2.248,00 e será pago em 8 parcelas iguais, sem juros.","Qual será o valor, em reais, de cada parcela?",281,N2,Avançado,reais,2248,8
+10,D10 - Hortaliças na comunidade,Uma cooperativa colheu 1.680 pés de alface e vai distribuí-los igualmente entre 12 pontos de venda.,Quantos pés de alface cada ponto receberá?,140,N2,Avançado,pés de alface,1680,12
