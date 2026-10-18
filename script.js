@@ -7537,8 +7537,21 @@ function phase2RenderSceneAtmosphere(filename){
     <span class="phase2-bird phase2-bird-near" aria-hidden="true"></span>
   `;
 
-  // A correnteza é animada por pseudo-elementos CSS no próprio layer.
-  water.innerHTML = "";
+  // A massa d'água não se move. Somente o reflexo do sol ganha uma oscilação luminosa localizada.
+  water.innerHTML = `
+    <span class="phase2-water-reflection-column" aria-hidden="true"></span>
+    <span class="phase2-water-glint g1" aria-hidden="true"></span>
+    <span class="phase2-water-glint g2" aria-hidden="true"></span>
+    <span class="phase2-water-glint g3" aria-hidden="true"></span>
+    <span class="phase2-water-glint g4" aria-hidden="true"></span>
+    <span class="phase2-water-glint g5" aria-hidden="true"></span>
+    <span class="phase2-water-glint g6" aria-hidden="true"></span>
+    <span class="phase2-water-glint g7" aria-hidden="true"></span>
+    <span class="phase2-water-spark s1" aria-hidden="true"></span>
+    <span class="phase2-water-spark s2" aria-hidden="true"></span>
+    <span class="phase2-water-spark s3" aria-hidden="true"></span>
+    <span class="phase2-water-spark s4" aria-hidden="true"></span>
+  `;
 }
 
 function phase2ApplySceneImage(levelKey,blockIndex){
@@ -7555,7 +7568,7 @@ function phase2ApplySceneImage(levelKey,blockIndex){
     scene.style.backgroundImage = `url("${filename}")`;
     fallback?.classList.add("hidden");
 
-    // Água, nuvens e pássaros são adicionados apenas a B15natureza.
+    // Nuvens, pássaros e o reflexo solar do rio são adicionados apenas a B15natureza.
     phase2RenderSceneAtmosphere(filename);
 
     requestAnimationFrame(() => {
