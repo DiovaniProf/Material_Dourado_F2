@@ -7516,7 +7516,7 @@ function phase2RenderSceneAtmosphere(filename){
 
   if(!scene || !atmosphere || !clouds || !birds || !water) return;
 
-  // Regra inegociável da FASE 2: somente B15natureza recebe atmosfera em movimento.
+  // Regra da FASE 2: somente B15natureza recebe atmosfera em movimento.
   if(!phase2IsAnimatedNatureScene(filename)){
     phase2ClearSceneAtmosphere();
     return;
@@ -7529,21 +7529,16 @@ function phase2RenderSceneAtmosphere(filename){
     <span class="phase2-cloud phase2-cloud-a"></span>
     <span class="phase2-cloud phase2-cloud-b"></span>
     <span class="phase2-cloud phase2-cloud-c"></span>
-    <span class="phase2-cloud phase2-cloud-d"></span>
   `;
 
   birds.innerHTML = `
-    <span class="phase2-bird phase2-bird-a"></span>
-    <span class="phase2-bird phase2-bird-b"></span>
-    <span class="phase2-bird phase2-bird-c"></span>
-    <span class="phase2-bird phase2-bird-d"></span>
+    <span class="phase2-bird phase2-bird-far" aria-hidden="true"></span>
+    <span class="phase2-bird phase2-bird-mid" aria-hidden="true"></span>
+    <span class="phase2-bird phase2-bird-near" aria-hidden="true"></span>
   `;
 
-  water.innerHTML = `
-    <span class="phase2-water-flow phase2-water-flow-a"></span>
-    <span class="phase2-water-flow phase2-water-flow-b"></span>
-    <span class="phase2-water-flow phase2-water-flow-c"></span>
-  `;
+  // A correnteza é animada por pseudo-elementos CSS no próprio layer.
+  water.innerHTML = "";
 }
 
 function phase2ApplySceneImage(levelKey,blockIndex){
@@ -7727,6 +7722,7 @@ function phase2OpenParticipation(levelKey=state.phase2CurrentLevel || "basic"){
   $("#phase2ParticipationSubtitle").textContent = "Veja suas 15 etapas, estados e relatórios individuais.";
   $("#phase2ParticipationBody").innerHTML = phase2ParticipationHtml(levelKey);
   $("#phase2ParticipationModal").classList.remove("hidden");
+  document.body.classList.add("phase2-participation-open");
 
   $$('[data-phase2-report-block]',$("#phase2ParticipationBody")).forEach(button => {
     button.addEventListener("click",() => phase2DownloadStudentDocx(levelKey,Number(button.dataset.phase2ReportBlock)));
@@ -7736,6 +7732,7 @@ function phase2OpenParticipation(levelKey=state.phase2CurrentLevel || "basic"){
 
 function phase2CloseParticipation(){
   $("#phase2ParticipationModal")?.classList.add("hidden");
+  document.body.classList.remove("phase2-participation-open");
 }
 
 /* ---------- DOCX individual do aluno ---------- */
@@ -7748,9 +7745,26 @@ function phase2DocxEscape(value){
     .replace(/'/g,"&apos;");
 }
 
-function phase2DocxParagraph(text,bold=false){
+function phase2DocxRun(text,{bold=false,size=24}={}){
   const safe = phase2DocxEscape(text);
-  return `<w:p><w:r>${bold ? "<w:rPr><w:b/></w:rPr>" : ""}<w:t xml:space="preserve">${safe}</w:t></w:r></w:p>`;
+  return `<w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/>${bold ? "<w:b/>" : ""}<w:sz w:val="${size}"/><w:szCs w:val="${size}"/></w:rPr><w:t xml:space="preserve">${safe}</w:t></w:r>`;
+}
+
+function phase2DocxParagraph(text,bold=false,{size=24,after=40,before=0}={}){
+  return `<w:p><w:pPr><w:spacing w:before="${before}" w:after="${after}"/></w:pPr>${phase2DocxRun(text,{bold,size})}</w:p>`;
+}
+
+function phase2DocxLabeledParagraph(label,value,{size=24,after=20}={}){
+  return `<w:p><w:pPr><w:spacing w:after="${after}"/></w:pPr>${phase2DocxRun(`${label}:`,{bold:true,size})}${phase2DocxRun(` ${value ?? "—"}`,{size})}</w:p>`;
+}
+
+function phase2DocxMultilineLabel(label,value,{size=24,after=80}={}){
+  const safeText = String(value ?? "").trim() || "—";
+  const lines = safeText.split(/\r?\n/);
+  let xml = `<w:p><w:pPr><w:spacing w:after="16"/></w:pPr>${phase2DocxRun(`${label}:`,{bold:true,size})}</w:p>`;
+  lines.forEach(line => { xml += phase2DocxParagraph(line,false,{size,after:12}); });
+  xml += `<w:p><w:pPr><w:spacing w:after="${after}"/></w:pPr></w:p>`;
+  return xml;
 }
 
 async function phase2DownloadStudentDocx(levelKey,blockIndex=null){
@@ -7767,32 +7781,49 @@ async function phase2DownloadStudentDocx(levelKey,blockIndex=null){
   const range = blockIndex === null ? "01–15" : `${String(blockIndex*5+1).padStart(2,"0")}–${String(blockIndex*5+5).padStart(2,"0")}`;
 
   let body = "";
-  body += phase2DocxParagraph("PROJETO EDUCACIONAL 2.0 — FASE 2",true);
-  body += phase2DocxParagraph(`Relatório individual de participação — Divisão — ${meta.label}`,true);
-  body += phase2DocxParagraph(`Aluno: ${studentName}`);
-  body += phase2DocxParagraph(`Percurso: ${meta.theme} • Missões ${range}`);
-  body += phase2DocxParagraph(`Gerado em: ${formatDateTime(new Date().toISOString())}`);
-  body += phase2DocxParagraph("");
+  body += phase2DocxParagraph("PROJETO EDUCACIONAL 2.0 — FASE 2",true,{size:30,after:30});
+  body += phase2DocxParagraph("Relatório individual de participação",true,{size:28,after:30});
+  body += phase2DocxLabeledParagraph("Conteúdo","Divisão",{size:25});
+  body += phase2DocxLabeledParagraph("Nível",meta.label,{size:25});
+  body += phase2DocxLabeledParagraph("Aluno",studentName,{size:25});
+  body += phase2DocxLabeledParagraph("Percurso",`${meta.theme} • Missões ${range}`,{size:25});
+  body += phase2DocxLabeledParagraph("Gerado em",formatDateTime(new Date().toISOString()),{size:25,after:120});
 
-  slots.forEach(slot => {
-    const status = slot.activity ? slot.status : "locked";
+  const printable = slots.filter(slot => slot.activity);
+  if(!printable.length){
+    body += phase2DocxParagraph("Nenhuma atividade foi disponibilizada neste intervalo.",false,{size:24,after:80});
+  }
+
+  printable.forEach((slot,index) => {
+    const status = slot.status || "locked";
     const submission = slot.submission;
-    body += phase2DocxParagraph(`Missão ${String(slot.number).padStart(2,"0")} — ${slot.activity?.title || "Atividade ainda não liberada"}`,true);
-    body += phase2DocxParagraph(`Situação: ${phase2StatusLabel(status)}`);
+    const statement = String(slot.activity?.statement || "").trim() || "—";
+
+    body += phase2DocxParagraph(`Missão ${String(slot.number).padStart(2,"0")} — ${slot.activity?.title || "Atividade"}`,true,{size:26,after:28,before:index ? 80 : 0});
+    body += phase2DocxLabeledParagraph("Enunciado",statement,{size:24,after:24});
+    body += phase2DocxLabeledParagraph("Situação",phase2StatusLabel(status),{size:24,after:18});
+
     if(submission){
-      body += phase2DocxParagraph(`Tentativas: ${Number(submission.attempts || 0)}`);
-      body += phase2DocxParagraph(`Tempo ativo: ${formatDuration(submission.activeSeconds || 0)}`);
-      body += phase2DocxParagraph(`Último registro: ${formatDateTime(submission.updatedAt || submission.accessedAt)}`);
-      body += phase2DocxParagraph(`Resposta final registrada: ${submission.finalAnswer || "—"}`);
-      body += phase2DocxParagraph(`Ferramenta Material Dourado utilizada: ${submission.materialProgress ? "Sim" : "Não"}`);
+      body += phase2DocxLabeledParagraph("Tentativas",String(Number(submission.attempts || 0)),{size:24,after:18});
+      body += phase2DocxLabeledParagraph("Tempo ativo",formatDuration(submission.activeSeconds || 0),{size:24,after:18});
+      body += phase2DocxLabeledParagraph("Último registro",formatDateTime(submission.updatedAt || submission.accessedAt),{size:24,after:18});
+      body += phase2DocxLabeledParagraph("Resposta final registrada",submission.finalAnswer || "—",{size:24,after:18});
+      body += phase2DocxLabeledParagraph("Ferramenta Material Dourado utilizada",submission.materialProgress ? "Sim" : "Não",{size:24,after:26});
+      body += phase2DocxMultilineLabel("Registro no rascunho",submission.scratch || "—",{size:24,after:100});
+    }else{
+      body += phase2DocxLabeledParagraph("Tentativas","0",{size:24,after:18});
+      body += phase2DocxLabeledParagraph("Tempo ativo","0min 00s",{size:24,after:18});
+      body += phase2DocxLabeledParagraph("Último registro","—",{size:24,after:18});
+      body += phase2DocxLabeledParagraph("Resposta final registrada","—",{size:24,after:18});
+      body += phase2DocxLabeledParagraph("Ferramenta Material Dourado utilizada","Não",{size:24,after:26});
+      body += phase2DocxMultilineLabel("Registro no rascunho","—",{size:24,after:100});
     }
-    body += phase2DocxParagraph("");
   });
 
-  body += phase2DocxParagraph("Observação: este relatório apresenta apenas os registros individuais do próprio aluno. O histórico pedagógico detalhado é de acesso exclusivo do professor.");
+  body += phase2DocxParagraph("Este relatório apresenta apenas os registros individuais do próprio aluno. O histórico pedagógico detalhado permanece reservado ao professor.",false,{size:20,after:20,before:80});
 
   const documentXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-  <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134"/></w:sectPr></w:body></w:document>`;
+  <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="900" w:right="900" w:bottom="900" w:left="900"/></w:sectPr></w:body></w:document>`;
 
   const zip = new JSZip();
   zip.file("[Content_Types].xml",`<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`);
@@ -7810,7 +7841,7 @@ async function phase2DownloadStudentDocx(levelKey,blockIndex=null){
   anchor.click();
   anchor.remove();
   setTimeout(() => URL.revokeObjectURL(url),1000);
-  toast("Relatório DOCX gerado.","success");
+  toast("Relatório DOCX gerado no formato individual de participação.","success");
 }
 
 /* ---------- Transição após blocos ---------- */

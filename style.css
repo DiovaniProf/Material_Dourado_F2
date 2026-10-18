@@ -6945,11 +6945,44 @@ small{color:var(--muted)}
 .phase2-map-actions{display:flex;gap:10px}
 
 /* PARTICIPAÇÃO DO ALUNO */
-.phase2-participation-modal-card{
-  width:min(1180px,94vw);
-  max-height:90vh;
-  overflow:auto;
+.phase2-participation-fullscreen{
+  place-items:stretch;
+  padding:0;
+  background:#030910;
+  backdrop-filter:none;
 }
+.phase2-participation-modal-card{
+  width:100vw;
+  height:100vh;
+  max-width:none;
+  max-height:none;
+  overflow:auto;
+  border:0;
+  border-radius:0;
+  padding:clamp(22px,3vw,48px);
+  background:
+    radial-gradient(circle at 0% 0%,rgba(36,116,176,.13),transparent 28%),
+    linear-gradient(180deg,#0a1725 0%,#07111d 100%);
+  box-shadow:none;
+}
+.phase2-participation-modal-card > .panel-title-row{
+  position:sticky;
+  top:0;
+  z-index:4;
+  margin:calc(clamp(22px,3vw,48px) * -1) calc(clamp(22px,3vw,48px) * -1) 24px;
+  padding:clamp(20px,2.6vw,38px) clamp(22px,3vw,48px) 20px;
+  border-bottom:1px solid rgba(89,183,242,.2);
+  background:rgba(7,17,29,.94);
+  backdrop-filter:blur(18px);
+}
+.phase2-participation-modal-card > .panel-title-row h2{
+  font-size:clamp(1.75rem,3vw,2.8rem);
+}
+.phase2-participation-modal-card > .panel-title-row p{
+  font-size:1.02rem;
+  color:#b5c6d8;
+}
+body.phase2-participation-open{overflow:hidden}
 .phase2-participation-summary{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -7071,255 +7104,90 @@ small{color:var(--muted)}
 
 /* ============================================================
    FASE 2 — ATMOSFERA ANIMADA — B15natureza.jpg
-   Efeito deliberadamente sutil: água, nuvens e pássaros.
-   Não é aplicado a nenhum outro cenário.
+   Aplicada SOMENTE ao bloco Básico 01–05.
+   Nuvens + água + 3 pássaros em V com profundidades diferentes.
    ============================================================ */
 
-.phase2-scene{
-  isolation:isolate;
-}
+.phase2-scene{isolation:isolate}
+.phase2-atmosphere{position:absolute;inset:0;z-index:1;overflow:hidden;pointer-events:none}
+.phase2-atmosphere.hidden{display:none !important}
+.phase2-clouds-layer,.phase2-birds-layer,.phase2-water-layer{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.phase2-scene-shade{z-index:2}
+.phase2-mission-layer{z-index:3}
+.phase2-scene-fallback{z-index:4}
 
-.phase2-atmosphere{
-  position:absolute;
-  inset:0;
-  z-index:1;
-  overflow:hidden;
-  pointer-events:none;
-}
-
-.phase2-atmosphere.hidden{
-  display:none !important;
-}
-
-.phase2-clouds-layer,
-.phase2-birds-layer,
-.phase2-water-layer{
-  position:absolute;
-  inset:0;
-  overflow:hidden;
-  pointer-events:none;
-}
-
-.phase2-scene-shade{
-  z-index:2;
-}
-
-.phase2-mission-layer{
-  z-index:3;
-}
-
-.phase2-scene-fallback{
-  z-index:4;
-}
-
-/* NUVENS — formas suaves e translúcidas, sem cobrir a leitura do cenário. */
+/* NUVENS: deslocamento lento e visível, sem competir com as missões. */
 .phase2-cloud{
   position:absolute;
-  height:clamp(34px,4.2vw,68px);
+  width:clamp(260px,25vw,440px);
+  height:clamp(62px,7vw,116px);
   border-radius:999px;
-  background:
-    radial-gradient(circle at 28% 44%,rgba(255,255,255,.38) 0 22%,rgba(255,255,255,.16) 43%,transparent 70%),
-    radial-gradient(circle at 58% 40%,rgba(255,244,224,.29) 0 24%,rgba(255,244,224,.12) 45%,transparent 72%),
-    radial-gradient(circle at 78% 50%,rgba(255,255,255,.23) 0 18%,rgba(255,255,255,.08) 44%,transparent 72%);
-  filter:blur(7px);
-  opacity:.28;
+  opacity:.30;
+  filter:blur(8px);
   mix-blend-mode:screen;
   will-change:transform;
-}
-
-.phase2-cloud-a{
-  left:-8%;
-  top:8%;
-  width:27%;
-  animation:phase2CloudDriftRight 52s linear infinite;
-}
-
-.phase2-cloud-b{
-  left:18%;
-  top:15%;
-  width:20%;
-  opacity:.23;
-  animation:phase2CloudDriftLeft 44s linear infinite -14s;
-}
-
-.phase2-cloud-c{
-  left:51%;
-  top:11%;
-  width:25%;
-  opacity:.20;
-  animation:phase2CloudDriftRight 61s linear infinite -26s;
-}
-
-.phase2-cloud-d{
-  left:75%;
-  top:19%;
-  width:19%;
-  opacity:.18;
-  animation:phase2CloudDriftLeft 48s linear infinite -8s;
-}
-
-/* ÁGUA — reflexos rasos posicionados sobre o curso d'água ao fundo. */
-.phase2-water-flow{
-  --water-rotate:0deg;
-  position:absolute;
-  border-radius:999px;
   background:
-    linear-gradient(90deg,
-      transparent 0%,
-      rgba(255,255,255,.05) 11%,
-      rgba(164,223,255,.18) 28%,
-      rgba(255,246,214,.16) 45%,
-      rgba(146,216,255,.18) 62%,
-      rgba(255,255,255,.04) 82%,
-      transparent 100%);
-  background-size:230% 100%;
-  opacity:.26;
-  mix-blend-mode:screen;
-  filter:blur(1.6px);
-  transform:rotate(var(--water-rotate));
-  will-change:background-position,transform,opacity;
-  animation:phase2WaterShimmer 9.5s ease-in-out infinite;
+    radial-gradient(ellipse at 16% 58%,rgba(255,250,241,.58) 0 16%,rgba(255,248,236,.25) 31%,transparent 56%),
+    radial-gradient(ellipse at 38% 42%,rgba(255,255,255,.55) 0 19%,rgba(255,250,242,.24) 34%,transparent 58%),
+    radial-gradient(ellipse at 62% 52%,rgba(255,248,236,.47) 0 18%,rgba(255,244,227,.20) 34%,transparent 60%),
+    radial-gradient(ellipse at 83% 58%,rgba(255,255,255,.40) 0 14%,rgba(255,255,255,.14) 32%,transparent 55%);
+}
+.phase2-cloud-a{left:-18%;top:6%;animation:phase2CloudAcross 46s linear infinite}
+.phase2-cloud-b{left:16%;top:14%;width:clamp(220px,20vw,350px);opacity:.25;animation:phase2CloudAcross 57s linear infinite -22s}
+.phase2-cloud-c{left:53%;top:8%;width:clamp(300px,28vw,470px);opacity:.22;animation:phase2CloudAcross 66s linear infinite -39s}
+@keyframes phase2CloudAcross{
+  0%{transform:translate3d(-4vw,0,0)}
+  50%{transform:translate3d(16vw,-5px,0)}
+  100%{transform:translate3d(36vw,2px,0)}
 }
 
-.phase2-water-flow-a{
-  left:57%;
-  top:46.5%;
-  width:24%;
-  height:4.8%;
-  --water-rotate:5deg;
+/* ÁGUA: brilho móvel recortado sobre o curso d'água da imagem. */
+.phase2-water-layer{
+  left:47%;right:5%;top:34%;bottom:12%;overflow:hidden;opacity:.78;
+  clip-path:polygon(50% 0%,68% 3%,78% 19%,82% 34%,77% 47%,66% 56%,53% 63%,41% 73%,30% 85%,15% 100%,0% 100%,19% 80%,34% 67%,50% 56%,62% 46%,66% 34%,60% 20%);
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 12%,#000 84%,transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0%,#000 12%,#000 84%,transparent 100%);
+}
+.phase2-water-layer::before,.phase2-water-layer::after{
+  content:"";position:absolute;inset:-18% -32%;mix-blend-mode:screen;will-change:transform,background-position;
+}
+.phase2-water-layer::before{
+  background:repeating-linear-gradient(166deg,transparent 0 14px,rgba(187,234,255,.08) 15px 17px,rgba(255,245,214,.24) 18px 20px,transparent 21px 35px);
+  background-size:170% 140%;filter:blur(.7px);animation:phase2WaterCurrent 6.8s linear infinite;
+}
+.phase2-water-layer::after{
+  background:radial-gradient(ellipse at 58% 20%,rgba(255,244,210,.34),transparent 23%),radial-gradient(ellipse at 45% 53%,rgba(160,225,255,.22),transparent 28%),linear-gradient(110deg,transparent 18%,rgba(255,255,255,.17) 39%,transparent 58%);
+  background-size:130% 100%,150% 100%,180% 100%;filter:blur(1.2px);animation:phase2WaterGlow 8.4s ease-in-out infinite alternate;
+}
+@keyframes phase2WaterCurrent{
+  0%{transform:translate3d(-7%,-1%,0) scale(1.02);background-position:0% 50%}
+  100%{transform:translate3d(8%,2%,0) scale(1.04);background-position:180% 50%}
+}
+@keyframes phase2WaterGlow{
+  0%{transform:translate3d(-3%,0,0);opacity:.46}
+  50%{transform:translate3d(2%,1%,0);opacity:.78}
+  100%{transform:translate3d(5%,-1%,0);opacity:.54}
 }
 
-.phase2-water-flow-b{
-  left:55%;
-  top:54.5%;
-  width:29%;
-  height:5.8%;
-  --water-rotate:3deg;
-  opacity:.21;
-  animation-duration:11.5s;
-  animation-delay:-4s;
-}
-
-.phase2-water-flow-c{
-  left:52%;
-  top:63%;
-  width:25%;
-  height:5.2%;
-  --water-rotate:-4deg;
-  opacity:.17;
-  animation-duration:13s;
-  animation-delay:-7s;
-}
-
-/* PÁSSAROS — silhuetas pequenas, ao fundo, sem interferir nos botões das missões. */
+/* PÁSSAROS: exatamente três silhuetas em V, com três escalas de profundidade. */
 .phase2-bird{
-  --bird-scale:1;
-  position:absolute;
-  width:30px;
-  height:14px;
-  opacity:.48;
-  filter:drop-shadow(0 1px 1px rgba(255,255,255,.08));
-  animation:phase2BirdGlide 18s ease-in-out infinite;
-  will-change:transform;
+  --bird-size:26px;position:absolute;width:var(--bird-size);height:calc(var(--bird-size) * .48);opacity:.68;will-change:transform;filter:drop-shadow(0 1px 1px rgba(255,255,255,.14));
 }
-
-.phase2-bird::before,
-.phase2-bird::after{
-  content:"";
-  position:absolute;
-  top:6px;
-  width:15px;
-  height:7px;
-  border-top:2px solid rgba(27,38,53,.64);
-  border-radius:80% 80% 0 0;
-}
-
 .phase2-bird::before{
-  left:0;
-  transform:rotate(-17deg);
-  transform-origin:right center;
+  content:"";position:absolute;inset:0;background:rgba(23,32,42,.80);clip-path:polygon(0 4%,50% 65%,100% 4%,84% 0,50% 42%,16% 0);transform-origin:50% 50%;animation:phase2BirdWings 1.7s ease-in-out infinite;
 }
+.phase2-bird-far{--bird-size:16px;left:59%;top:17%;opacity:.46;animation:phase2BirdFlightFar 18s linear infinite -5s}
+.phase2-bird-mid{--bird-size:25px;left:64%;top:20%;opacity:.60;animation:phase2BirdFlightMid 15s linear infinite -9s}
+.phase2-bird-near{--bird-size:38px;left:69%;top:14%;opacity:.76;animation:phase2BirdFlightNear 13s linear infinite -2s}
+@keyframes phase2BirdWings{0%,100%{transform:scaleY(.92)}50%{transform:scaleY(1.13)}}
+@keyframes phase2BirdFlightFar{0%{transform:translate3d(-7vw,10px,0)}50%{transform:translate3d(5vw,-4px,0)}100%{transform:translate3d(17vw,2px,0)}}
+@keyframes phase2BirdFlightMid{0%{transform:translate3d(-8vw,6px,0)}50%{transform:translate3d(6vw,-7px,0)}100%{transform:translate3d(20vw,1px,0)}}
+@keyframes phase2BirdFlightNear{0%{transform:translate3d(-10vw,8px,0)}50%{transform:translate3d(7vw,-11px,0)}100%{transform:translate3d(24vw,0,0)}}
 
-.phase2-bird::after{
-  right:0;
-  transform:scaleX(-1) rotate(-17deg);
-  transform-origin:left center;
-}
-
-.phase2-bird-a{
-  left:61%;
-  top:18%;
-  --bird-scale:.72;
-  animation-duration:19s;
-}
-
-.phase2-bird-b{
-  left:65%;
-  top:21%;
-  --bird-scale:.55;
-  animation-duration:23s;
-  animation-delay:-8s;
-}
-
-.phase2-bird-c{
-  left:70%;
-  top:16%;
-  --bird-scale:.82;
-  animation-duration:21s;
-  animation-delay:-4s;
-}
-
-.phase2-bird-d{
-  left:74%;
-  top:20%;
-  --bird-scale:.62;
-  animation-duration:25s;
-  animation-delay:-13s;
-}
-
-@keyframes phase2CloudDriftRight{
-  0%{transform:translate3d(0,0,0)}
-  50%{transform:translate3d(42px,-3px,0)}
-  100%{transform:translate3d(84px,0,0)}
-}
-
-@keyframes phase2CloudDriftLeft{
-  0%{transform:translate3d(0,0,0)}
-  50%{transform:translate3d(-31px,3px,0)}
-  100%{transform:translate3d(-62px,0,0)}
-}
-
-@keyframes phase2WaterShimmer{
-  0%{
-    background-position:0% 50%;
-    transform:rotate(var(--water-rotate)) translate3d(-1.5%,0,0) scaleY(.96);
-    opacity:.18;
-  }
-  50%{
-    background-position:100% 50%;
-    transform:rotate(var(--water-rotate)) translate3d(1.5%,1px,0) scaleY(1.04);
-    opacity:.30;
-  }
-  100%{
-    background-position:200% 50%;
-    transform:rotate(var(--water-rotate)) translate3d(-1.5%,0,0) scaleY(.96);
-    opacity:.18;
-  }
-}
-
-@keyframes phase2BirdGlide{
-  0%{transform:translate3d(0,0,0) scale(var(--bird-scale))}
-  25%{transform:translate3d(12px,-4px,0) scale(var(--bird-scale))}
-  50%{transform:translate3d(27px,0,0) scale(var(--bird-scale))}
-  75%{transform:translate3d(14px,4px,0) scale(var(--bird-scale))}
-  100%{transform:translate3d(0,0,0) scale(var(--bird-scale))}
-}
-
-/* Respeita a preferência do usuário por menos movimento. */
 @media (prefers-reduced-motion:reduce){
-  .phase2-cloud,
-  .phase2-water-flow,
-  .phase2-bird{
-    animation:none !important;
-  }
+  .phase2-cloud{animation-duration:120s !important}
+  .phase2-water-layer::before{animation-duration:24s !important}
+  .phase2-water-layer::after{animation-duration:28s !important}
+  .phase2-bird{animation-duration:40s !important}
+  .phase2-bird::before{animation-duration:4s !important}
 }
