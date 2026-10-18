@@ -3807,6 +3807,10 @@ function renderPieceVisuals(counts,location="pool",groupIndex=null){
     return `<div class="md-empty-pieces">Nenhuma peça</div>`;
   }
 
+  if(!state.materialDirectGroup){
+    state.materialDirectGroup = {M:0,C:0,D:0,U:0};
+  }
+
   return keys.map(key => {
     const count = Number(counts[key] || 0);
     if(!count) return "";
@@ -3838,13 +3842,43 @@ function renderPieceVisuals(counts,location="pool",groupIndex=null){
       ? Math.max(1,Math.min((board?.batchQuantity?.[key] || 1),count))
       : 1;
 
+    const directGroup = Math.max(
+      0,
+      Math.min(
+        Number(state.materialDirectGroup?.[key] || 0),
+        Math.max(0,(board?.groups?.length || 1) - 1)
+      )
+    );
+
     const controls = location === "pool"
       ? `
         <div class="md-batch-controls">
-          <div class="batch-label">Quantidade para envio rápido com botão direito</div>
+          <div class="batch-label">Quantidade para envio rápido</div>
           <button type="button" data-md-batch-minus="${key}" aria-label="Diminuir quantidade">−</button>
           <strong>${batchQty}</strong>
           <button type="button" data-md-batch-plus="${key}" aria-label="Aumentar quantidade">+</button>
+        </div>
+
+        <div class="md-send-methods" aria-label="Formas de enviar ${pieceLabel(key).toLowerCase()}">
+          <span class="md-send-method">1. Arrastar</span>
+          <span class="md-send-method">2. Botão direito</span>
+          <span class="md-send-method active">3. Envio direto</span>
+        </div>
+
+        <div class="md-direct-send">
+          <label>
+            <span>Enviar ${batchQty} peça(s) de uma única vez</span>
+            <select data-md-direct-group="${key}" aria-label="Escolher grupo de destino para ${pieceLabel(key).toLowerCase()}">
+              ${(board?.groups || []).map((group,index) => `
+                <option value="${index}" ${index === directGroup ? "selected" : ""}>Grupo ${index+1}</option>
+              `).join("")}
+            </select>
+          </label>
+          <button type="button"
+                  class="md-direct-send-button"
+                  data-md-direct-send="${key}">
+            ENVIAR ${batchQty}
+          </button>
         </div>
       `
       : "";
@@ -4483,7 +4517,9 @@ function clearMaterialFullscreenState(){
 function hideMaterialFullscreenOverlays(){
   $("#materialRepresentationFullscreen")?.classList.add("hidden");
   $("#materialWorkspaceFullscreen")?.classList.add("hidden");
+  $("#materialPoolFullscreen")?.classList.add("hidden");
   $("#materialExitModal")?.classList.add("hidden");
+  state.materialPoolFullscreenOpen = false;
   document.body.classList.remove("material-overlay-open");
 }
 
@@ -4805,11 +4841,13 @@ function renderMaterialLab(){
               <div>
                 <strong>Peças disponíveis</strong>
                 <small>
-                  Arraste uma peça até um grupo ou clique com o botão direito
-                  em uma peça para escolher o grupo de destino.
+                  Use uma das três opções: arrastar, botão direito ou envio direto da quantidade selecionada.
                 </small>
               </div>
-              <span>${materialCountsValue(board.available)}</span>
+              <div class="material-pool-heading-actions">
+                <span>${materialCountsValue(board.available)}</span>
+                <button id="openMaterialPoolFullscreenBtn" class="material-pool-fullscreen-button" type="button">MOSTRAR EM TELA CHEIA</button>
+              </div>
             </div>
 
             <div class="material-pool-pieces">
@@ -5047,6 +5085,10 @@ function refreshMaterialViews(){
   }else if(state.materialFullscreenMode === "workspace"){
     renderMaterialWorkspaceFullscreen();
   }
+
+  if(state.materialPoolFullscreenOpen){
+    renderMaterialPoolFullscreen();
+  }
 }
 
 function bindMaterialControls(root,mode="normal"){
@@ -5056,6 +5098,10 @@ function bindMaterialControls(root,mode="normal"){
   root.querySelector("#openRepresentationStepBtn")?.addEventListener("click",openRepresentationFullscreen);
   root.querySelector("#openRepresentationFullscreenBtn")?.addEventListener("click",openRepresentationFullscreen);
   root.querySelector("#openMaterialWorkspaceFullscreenBtn")?.addEventListener("click",openMaterialWorkspaceFullscreen);
+  root.querySelector("#openMaterialPoolFullscreenBtn")?.addEventListener("click",() => openMaterialPoolFullscreen(mode));
+  root.querySelectorAll("[data-open-material-pool-fullscreen]").forEach(button => {
+    button.addEventListener("click",() => openMaterialPoolFullscreen(mode));
+  });
 
   root.querySelectorAll("[data-md-batch-plus]").forEach(button => {
     button.addEventListener("click",() => {
@@ -5073,6 +5119,38 @@ function bindMaterialControls(root,mode="normal"){
       board.batchQuantity[key] = Math.max(1,(board.batchQuantity[key] || 1) - 1);
       recordMaterialMovement("alterar quantidade de envio",{piece:key,quantity:board.batchQuantity[key]});
       refreshMaterialViews();
+    });
+  });
+
+  root.querySelectorAll("[data-md-direct-group]").forEach(select => {
+    select.addEventListener("change",() => {
+      const key = select.dataset.mdDirectGroup;
+      if(!state.materialDirectGroup) state.materialDirectGroup = {M:0,C:0,D:0,U:0};
+      state.materialDirectGroup[key] = Number(select.value || 0);
+    });
+  });
+
+  root.querySelectorAll("[data-md-direct-send]").forEach(button => {
+    button.addEventListener("click",() => {
+      const key = button.dataset.mdDirectSend;
+      const cluster = button.closest(".md-piece-cluster");
+      const select = cluster?.querySelector(`[data-md-direct-group="${key}"]`);
+      const index = Number(select?.value ?? state.materialDirectGroup?.[key] ?? 0);
+      const quantity = Math.max(
+        1,
+        Math.min(
+          Number(board.batchQuantity?.[key] || 1),
+          Number(board.available?.[key] || 0)
+        )
+      );
+
+      if((board.available?.[key] || 0) <= 0){
+        return toast(`Não há ${pieceLabel(key).toLowerCase()} disponível.`,"error");
+      }
+
+      if(!state.materialDirectGroup) state.materialDirectGroup = {M:0,C:0,D:0,U:0};
+      state.materialDirectGroup[key] = index;
+      moveMaterialPieceToGroup(key,index,quantity);
     });
   });
 
@@ -5137,6 +5215,16 @@ function bindMaterialControls(root,mode="normal"){
         moveMaterialPieceToGroup(key,index,count);
       }
     });
+  });
+
+  root.querySelector("#materialPoolBackBtn")?.addEventListener("click",closeMaterialPoolFullscreen);
+  root.querySelector("#materialPoolBackExerciseBtn")?.addEventListener("click",() => {
+    saveMaterialProgress("voltar ao exercício pelas peças em tela cheia");
+    $("#materialPoolFullscreen")?.classList.add("hidden");
+    state.materialPoolFullscreenOpen = false;
+    if(!state.materialFullscreenMode) document.body.classList.remove("material-overlay-open");
+    showScreen("screenStudentActivity");
+    autoGrowScratchField();
   });
 
   root.querySelector("#collectMaterialPiecesBtn")?.addEventListener("click",collectAllMaterialPieces);
@@ -6124,9 +6212,12 @@ function renderMaterialWorkspaceFullscreen(){
           <div class="material-pool-heading">
             <div>
               <strong>Peças disponíveis</strong>
-              <small>Selecione a quantidade para envio rápido. Arraste as peças ou use o botão direito para escolher o grupo.</small>
+              <small>Escolha a quantidade e use: arrastar, botão direito ou envio direto para um grupo.</small>
             </div>
-            <span>${materialCountsValue(board.available)}</span>
+            <div class="material-pool-heading-actions">
+              <span>${materialCountsValue(board.available)}</span>
+              <button id="openMaterialPoolFullscreenBtn" class="material-pool-fullscreen-button" type="button">PEÇAS EM TELA CHEIA</button>
+            </div>
           </div>
 
           <div class="material-pool-pieces">
@@ -6188,6 +6279,84 @@ function renderMaterialWorkspaceFullscreen(){
   `;
 
   bindMaterialControls(root,"fullscreen");
+}
+
+
+/* ============================================================
+   MATERIAL DOURADO — PEÇAS DISPONÍVEIS EM TELA CHEIA
+   ============================================================ */
+function openMaterialPoolFullscreen(sourceMode="normal"){
+  if(!state.materialBoard?.confirmed){
+    return toast("Confirme primeiro a representação do dividendo.","info");
+  }
+
+  state.materialPoolFullscreenOpen = true;
+  state.materialPoolReturnMode = sourceMode || "normal";
+  $("#materialPoolFullscreen")?.classList.remove("hidden");
+  document.body.classList.add("material-overlay-open");
+  renderMaterialPoolFullscreen();
+}
+
+function closeMaterialPoolFullscreen(){
+  $("#materialPoolFullscreen")?.classList.add("hidden");
+  state.materialPoolFullscreenOpen = false;
+
+  if(state.materialFullscreenMode === "workspace"){
+    document.body.classList.add("material-overlay-open");
+    renderMaterialWorkspaceFullscreen();
+  }else if(state.materialFullscreenMode === "representation"){
+    document.body.classList.add("material-overlay-open");
+    renderRepresentationFullscreen();
+  }else{
+    document.body.classList.remove("material-overlay-open");
+    renderMaterialLab();
+  }
+}
+
+function renderMaterialPoolFullscreen(){
+  const board = state.materialBoard;
+  const root = $("#materialPoolFullscreenRoot");
+  if(!board || !root) return;
+
+  root.innerHTML = `
+    <div class="material-fs-shell material-pool-fullscreen-shell">
+      <header class="material-fs-header">
+        <div class="material-fs-title">
+          <span class="kicker">MATERIAL DOURADO — PEÇAS DISPONÍVEIS</span>
+          <h1>Escolha e envie as peças</h1>
+          <p>Use o espaço ampliado para visualizar as peças e escolher uma das três formas de distribuição.</p>
+        </div>
+
+        <div class="material-fs-header-actions">
+          <div class="material-fs-chip"><span>VALOR DISPONÍVEL</span><strong>${materialCountsValue(board.available)}</strong></div>
+          <div class="material-fs-chip"><span>GRUPOS</span><strong>${board.divisor}</strong></div>
+          <button id="materialPoolBackBtn" class="material-fs-button" type="button">VOLTAR À DISTRIBUIÇÃO</button>
+          <button id="materialPoolBackExerciseBtn" class="material-fs-button gold" type="button">VOLTAR AO EXERCÍCIO</button>
+        </div>
+      </header>
+
+      <section class="material-pool-fullscreen-card">
+        <div class="material-pool-fullscreen-intro">
+          <div>
+            <span class="eyebrow">3 FORMAS DE ENVIO</span>
+            <h2>Peças disponíveis</h2>
+            <p>
+              1. Arraste a quantidade selecionada para um grupo. &nbsp;
+              2. Use o botão direito e escolha o grupo. &nbsp;
+              3. Escolha o grupo no campo de envio direto e envie todas as peças selecionadas de uma única vez.
+            </p>
+          </div>
+          <strong class="material-pool-fullscreen-total">${materialCountsValue(board.available)}</strong>
+        </div>
+
+        <div class="material-pool-fullscreen-grid">
+          ${renderPieceVisuals(board.available,"pool")}
+        </div>
+      </section>
+    </div>
+  `;
+
+  bindMaterialControls(root,"pool");
 }
 
 

@@ -7278,3 +7278,312 @@ body.phase2-participation-open{overflow:hidden}
   .phase2-bird{animation-duration:40s !important}
   .phase2-bird::before{animation-duration:4s !important}
 }
+
+
+/* ============================================================
+   FASE 2 — V1.4 — PEÇAS DISPONÍVEIS EM TELA CHEIA
+   + TERCEIRA FORMA DE ENVIO DIRETO
+   ============================================================ */
+.material-pool-heading-actions{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:8px;
+  flex:0 0 auto;
+}
+
+.material-pool-heading-actions>span{
+  color:#ffd83f;
+  font-size:1.8rem;
+  font-weight:1000;
+  line-height:1;
+}
+
+.material-pool-fullscreen-button{
+  min-height:38px;
+  padding:7px 11px;
+  border:1px solid rgba(77,190,255,.55);
+  border-radius:10px;
+  background:linear-gradient(180deg,#13385a,#0a2740);
+  color:#9ee3ff;
+  font:inherit;
+  font-size:.76rem;
+  font-weight:1000;
+  letter-spacing:.02em;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.material-pool-fullscreen-button:hover{
+  border-color:#5ed1ff;
+  color:#fff;
+  box-shadow:0 0 18px rgba(54,190,255,.18);
+}
+
+.md-send-methods{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:10px;
+}
+
+.md-send-method{
+  display:inline-flex;
+  align-items:center;
+  min-height:29px;
+  padding:5px 9px;
+  border:1px solid rgba(101,133,163,.28);
+  border-radius:999px;
+  background:rgba(255,255,255,.035);
+  color:#9fb2c5;
+  font-size:.72rem;
+  font-weight:850;
+}
+
+.md-send-method.active{
+  border-color:rgba(255,207,74,.45);
+  color:#ffd65d;
+  background:rgba(255,207,74,.08);
+}
+
+.md-direct-send{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:10px;
+  align-items:end;
+  margin-top:11px;
+  padding-top:11px;
+  border-top:1px solid rgba(112,145,175,.18);
+}
+
+.md-direct-send label{
+  display:grid;
+  gap:6px;
+  min-width:0;
+}
+
+.md-direct-send label>span{
+  color:#b9c9d7;
+  font-size:.78rem;
+  font-weight:850;
+  line-height:1.3;
+}
+
+.md-direct-send select{
+  width:100%;
+  min-height:42px;
+  border:1px solid #35516b;
+  border-radius:10px;
+  padding:7px 34px 7px 10px;
+  background:#071522;
+  color:#fff;
+  font:inherit;
+  font-size:.9rem;
+  font-weight:850;
+}
+
+.md-direct-send-button{
+  min-height:42px;
+  padding:8px 14px;
+  border:1px solid #d8a72a;
+  border-radius:10px;
+  background:linear-gradient(180deg,#ffd75f,#eeb82d);
+  color:#172436;
+  font:inherit;
+  font-size:.82rem;
+  font-weight:1000;
+  cursor:pointer;
+  box-shadow:0 6px 16px rgba(237,184,45,.14);
+}
+
+.md-direct-send-button:hover{
+  filter:brightness(1.06);
+  transform:translateY(-1px);
+}
+
+/* Tela cheia exclusiva das peças disponíveis */
+.material-pool-fullscreen-shell{
+  min-height:100vh;
+  color:#eef7ff;
+  background:
+    radial-gradient(circle at 16% 0%,rgba(37,148,224,.13),transparent 32%),
+    linear-gradient(180deg,#06111d,#030a12 70%,#02070c);
+}
+
+.material-pool-fullscreen-shell .material-fs-header{
+  position:sticky;
+  top:0;
+  z-index:6;
+  background:rgba(5,15,25,.94);
+  backdrop-filter:blur(14px);
+  border-bottom-color:#163551;
+}
+
+.material-pool-fullscreen-shell .material-fs-title h1{
+  color:#fff;
+}
+
+.material-pool-fullscreen-shell .material-fs-title p,
+.material-pool-fullscreen-shell .material-fs-title .kicker{
+  color:#9ec4e3;
+}
+
+.material-pool-fullscreen-shell .material-fs-chip{
+  border-color:#214767;
+  background:#091c2d;
+}
+
+.material-pool-fullscreen-shell .material-fs-chip span{color:#86acd0}
+.material-pool-fullscreen-shell .material-fs-chip strong{color:#ffd447}
+
+.material-pool-fullscreen-card{
+  margin:20px auto 0;
+  width:min(1500px,calc(100% - 12px));
+  padding:22px;
+  border:1px solid #1d4566;
+  border-radius:22px;
+  background:rgba(6,19,31,.94);
+  box-shadow:0 24px 70px rgba(0,0,0,.28);
+}
+
+.material-pool-fullscreen-intro{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:24px;
+  margin-bottom:18px;
+  padding-bottom:16px;
+  border-bottom:1px solid #173651;
+}
+
+.material-pool-fullscreen-intro h2{
+  margin:3px 0 7px;
+  color:#fff;
+  font-size:clamp(1.7rem,2.5vw,2.35rem);
+}
+
+.material-pool-fullscreen-intro p{
+  max-width:1060px;
+  margin:0;
+  color:#b6cce0;
+  font-size:1.04rem;
+  line-height:1.55;
+}
+
+.material-pool-fullscreen-total{
+  flex:0 0 auto;
+  color:#ffd43d;
+  font-size:clamp(2.2rem,4vw,4rem);
+  line-height:1;
+}
+
+.material-pool-fullscreen-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px;
+}
+
+.material-pool-fullscreen-grid .md-piece-cluster{
+  min-height:260px;
+  padding:20px;
+  border:1px solid #244c6b;
+  border-radius:18px;
+  background:#091a28;
+}
+
+.material-pool-fullscreen-grid .md-piece-cluster-label{
+  color:#e8f5ff;
+  font-size:1.2rem;
+}
+
+.material-pool-fullscreen-grid .md-piece-cluster-label span{
+  font-size:1.1rem;
+}
+
+.material-pool-fullscreen-grid .md-pieces-row{
+  min-height:82px;
+  align-items:center;
+  gap:8px;
+}
+
+.material-pool-fullscreen-grid .md-piece-D{
+  width:20px !important;
+  height:72px !important;
+}
+
+.material-pool-fullscreen-grid .md-piece-U{
+  width:29px !important;
+  height:29px !important;
+}
+
+.material-pool-fullscreen-grid .md-piece-C{
+  width:62px !important;
+  height:62px !important;
+}
+
+.material-pool-fullscreen-grid .md-piece-M{
+  width:70px !important;
+  height:70px !important;
+}
+
+.material-pool-fullscreen-grid .md-batch-controls{
+  margin-top:12px;
+}
+
+.material-pool-fullscreen-grid .md-batch-controls .batch-label{
+  font-size:.95rem;
+  color:#bcd1e3;
+}
+
+.material-pool-fullscreen-grid .md-batch-controls button{
+  width:42px;
+  height:42px;
+  font-size:1.2rem;
+}
+
+.material-pool-fullscreen-grid .md-batch-controls strong{
+  font-size:1.15rem;
+}
+
+.material-pool-fullscreen-grid .md-direct-send label>span{
+  font-size:.92rem;
+  color:#c7d9e8;
+}
+
+.material-pool-fullscreen-grid .md-direct-send select,
+.material-pool-fullscreen-grid .md-direct-send-button{
+  min-height:48px;
+  font-size:.95rem;
+}
+
+/* Harmoniza o controle novo dentro do workspace claro de tela cheia. */
+.material-fs-shell-workspace .md-direct-send{
+  border-top-color:#d9e5ef;
+}
+.material-fs-shell-workspace .md-direct-send label>span{color:#56708a}
+.material-fs-shell-workspace .md-direct-send select{
+  border-color:#bdd0e2;
+  background:#f7fbff;
+  color:#173a59;
+}
+.material-fs-shell-workspace .md-send-method{
+  border-color:#d2dfeb;
+  background:#f6f9fc;
+  color:#58728b;
+}
+.material-fs-shell-workspace .md-send-method.active{
+  border-color:#e2be54;
+  background:#fff8df;
+  color:#805f00;
+}
+
+@media(max-width:900px){
+  .material-pool-fullscreen-grid{grid-template-columns:1fr}
+  .material-pool-fullscreen-intro{flex-direction:column}
+  .material-pool-heading-actions{align-items:flex-start}
+}
+
+@media(max-width:560px){
+  .md-direct-send{grid-template-columns:1fr}
+  .md-direct-send-button{width:100%}
+}

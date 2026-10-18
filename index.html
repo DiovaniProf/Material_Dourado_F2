@@ -6,13 +6,13 @@
   <meta name="theme-color" content="#06101d">
   <title>Projeto Educacional 2.0 — Fase 2</title>
 
-  <link rel="stylesheet" href="style.css?v=fase2-1.3-reflexo-agua-b15">
+  <link rel="stylesheet" href="style.css?v=fase2-1.4-pecas-fullscreen-b15">
 
   <!-- Leitura local de planilhas XLS/XLSX e documentos DOCX -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/mammoth@1.13.0/mammoth.browser.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js" defer></script>
-  <script src="script.js?v=fase2-1.3-reflexo-agua-b15" defer></script>
+  <script src="script.js?v=fase2-1.4-pecas-fullscreen-b15" defer></script>
 </head>
 
 <body>
@@ -899,6 +899,14 @@
            aria-modal="true"
            aria-label="Trocas e distribuição com Material Dourado em tela cheia">
         <div id="materialWorkspaceFullscreenRoot" class="material-fullscreen-root"></div>
+      </div>
+
+      <div id="materialPoolFullscreen"
+           class="material-fullscreen-overlay hidden"
+           role="dialog"
+           aria-modal="true"
+           aria-label="Peças disponíveis do Material Dourado em tela cheia">
+        <div id="materialPoolFullscreenRoot" class="material-fullscreen-root"></div>
       </div>
 
     </main>
